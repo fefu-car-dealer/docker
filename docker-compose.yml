@@ -12,6 +12,8 @@ services:
       - '9000:9000'
     volumes:
       - ${BACKEND_PATH}:/var/www/html/
+    depends_on:
+      - mysql
 
   nginx:
     env_file:
@@ -25,3 +27,23 @@ services:
       - ./nginx/conf.d/:/etc/nginx/conf.d/
     depends_on:
       - php
+
+  mysql:
+    env_file:
+      - .env
+    container_name: car-dealer-mysql
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - '3306:3306'
+    volumes:
+      - dbdata:/var/lib/mysql
+
+volumes:
+  dbdata:
+    driver: local
